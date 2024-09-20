@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:shelf/shelf.dart';
@@ -5,12 +6,59 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 // Configure routes.
-final _router = Router()
+final _router = Router(notFoundHandler: _notFoundHandler)
   ..get('/', _rootHandler)
-  ..get('/echo/<message>', _echoHandler);
+  ..get('/api/v1/check', _checkHandler)
+  ..get('/api/echo/<message>', _echoHandler)
+  ..post("/api/v1/submit", _submitHandler);
+
+final _headers = {'Content-Type': 'application/json'};
+
+Response _notFoundHandler(Request req) {
+  return Response.notFound('ERROR! Cannot found http ${req.url}');
+}
 
 Response _rootHandler(Request req) {
-  return Response.ok('Hello, World!\n');
+  return Response.ok(json.encode({"message": 'Hello, World!\n'}),
+      headers: _headers);
+}
+
+Response _checkHandler(Request req) {
+  return Response.ok(
+    json.encode({'message': 'Chào mừng bạn đến với ứng dụng web động'}),
+    headers: _headers,
+  );
+}
+
+Future<Response> _submitHandler(Request req) async {
+  try {
+    final payload = await req.readAsString();
+    final data = json.decode(payload);
+    final name = data['name'] as String?;
+    if (name != null && name.isNotEmpty) {
+      // Tạo phản hồi chào mừng
+      final response = {'message': 'Chào mừng $name'};
+      // Trả về phản hồi với statusCode 200 và nội dung JSON
+      return Response.ok(
+        json.encode(response),
+        headers: _headers,
+      );
+    } else {
+      // Tạo phản hồi yêu cầu cung cấp tên
+      final response = {'message': 'Server không nhận được tên của bạn.'};
+      // Trả về phản hồi với statusCode 400 và nội dung JSON
+      return Response.badRequest(
+        body: json.encode(response),
+        headers: _headers,
+      );
+    }
+  } catch (e) {
+    final response = {"message": 'Yeu cau khong hop le ${e.toString()}'};
+    return Response.badRequest(
+      body: json.encode(response),
+      headers: _headers,
+    );
+  }
 }
 
 Response _echoHandler(Request request) {
