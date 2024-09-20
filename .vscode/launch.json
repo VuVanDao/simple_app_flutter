@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "backend",
+      "cwd": "backend",
+      "request": "launch",
+      "type": "dart",
+      "program": "bin/server.dart"
+    },
+    {
+      "name": "fontend",
+      "cwd": "fontend",
+      "request": "launch",
+      "type": "dart",
+      "args": ["-d", "chrome", "--web-port", "8081"]
+    },
+    {
+      "name": "fontend (profile mode)",
+      "cwd": "fontend",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "fontend (release mode)",
+      "cwd": "fontend",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}
